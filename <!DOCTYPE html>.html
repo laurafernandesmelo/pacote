@@ -11,7 +11,7 @@
             width: 100%;
             height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             overflow: hidden;
             font-family: 'Segoe UI', sans-serif;
@@ -20,34 +20,80 @@
 
         /* FUNDO PASTEL MÁGICO */
         body::before, body::after {
-            content: ""; position: absolute; border-radius: 50%; pointer-events: none;
+            content: ""; position: absolute; border-radius: 50%; pointer-events: none; z-index: 1;
         }
         body::before { 
             width: 1200px; height: 1200px; 
             background: radial-gradient(circle, rgba(255,255,255,0.7), transparent 70%); 
             top: -400px; left: -400px; 
         }
-        body::after { 
-            width: 1000px; height: 1000px; 
-            background: radial-gradient(circle, rgba(255,255,255,0.6), transparent 70%); 
-            bottom: -400px; right: -400px; 
+
+        /* MENU DE NAVEGAÇÃO INTERNO */
+        .nav-menu {
+            position: relative;
+            z-index: 10;
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 8px;
+            border-radius: 50px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
         }
 
-        .container {
+        .nav-btn {
+            padding: 10px 30px;
+            border: none;
+            background: transparent;
+            color: #8a6cb5;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 40px;
+            transition: 0.3s;
+        }
+
+        .nav-btn.active {
+            background: #b194e8;
+            color: white;
+            box-shadow: 0 5px 15px rgba(177, 148, 232, 0.4);
+        }
+
+        /* CONTAINER DAS TELAS */
+        .view-content {
             position: relative;
             z-index: 2;
-            perspective: 2500px;
-            text-align: center;
             width: 100%;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* GERENCIAMENTO DE ABAS */
+        .tab-panel {
+            display: none;
+            width: 100%;
+            max-width: 1100px;
+            height: 100%;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .tab-panel.active-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
         /* PACOTE GIGANTE */
         .pack-wrapper {
             position: relative;
-            width: 800px; 
-            max-width: 90vw;
+            width: 400px; 
+            max-width: 85vw;
             cursor: pointer;
-            margin: 0 auto;
             user-select: none;
         }
 
@@ -82,130 +128,329 @@
         }
         .stage-3 .pack-top { transform: translateY(-110px) rotateX(25deg) rotateZ(-3deg); }
         .stage-3 .pack-bottom { transform: translateY(40px) rotateX(-20deg) rotateZ(2deg); }
-
         .stage-4 .pack-top { transform: translateY(-1300px) scale(0.1); opacity: 0; }
         .stage-4 .pack-bottom { transform: translateY(1300px) scale(0.1); opacity: 0; }
 
         /* ÁREA DAS CARTAS REVELADAS */
         .reward-screen {
             display: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 95%;
+            text-align: center;
+            width: 100%;
         }
 
         .show-reward .reward-screen { 
             display: block; 
-            animation: zoomIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; 
+            animation: zoomIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; 
         }
 
         .cards-container {
             display: flex;
             gap: 15px;
             justify-content: center;
-            margin-top: 30px;
-            flex-wrap: nowrap;
+            margin: 25px 0;
+            flex-wrap: wrap;
         }
 
         .card {
-            width: 180px; /* Ajuste leve para caberem as 5 lado a lado */
-            height: 255px;
+            width: 140px;
+            height: 195px;
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-            border: 8px solid white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border: 5px solid white;
             overflow: hidden;
-            opacity: 0;
-            transform: translateY(60px);
-            animation: cardAppear 0.6s forwards;
+            transition: transform 0.3s;
         }
-
         .card img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* ANIMAÇÕES */
-        @keyframes shake-light { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(3px, 3px); } }
-        @keyframes shake-heavy { 0%, 100% { transform: translate(0,0); } 25% { transform: translate(-8px, 8px); } 75% { transform: translate(8px, -8px); } }
-        @keyframes zoomIn { from { opacity: 0; transform: translate(-50%, -50%) scale(0.4); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
-        @keyframes cardAppear { to { opacity: 1; transform: translateY(0); } }
+        .reveal-card {
+            opacity: 0;
+            transform: translateY(40px);
+            animation: cardAppear 0.5s forwards;
+        }
 
-        .btn-restart {
-            margin-top: 50px;
-            padding: 15px 50px;
+        /* ESTILO DO LIVRINHO (ÁLBUM) */
+        .album-wrapper {
+            width: 100%;
+            height: 80vh;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 25px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            border: 4px solid #fff;
+            overflow-y: auto;
+            text-align: center;
+        }
+
+        .album-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .album-wrapper .card {
+            width: 100%;
+            height: 155px;
+        }
+
+        /* Se a carta estiver liberada, mostra o cursor de clique */
+        .album-wrapper .card:not(.locked) {
+            cursor: pointer;
+        }
+        .album-wrapper .card:not(.locked):hover {
+            transform: scale(1.08);
+            box-shadow: 0 12px 25px rgba(177, 148, 232, 0.4);
+        }
+
+        .card.locked {
+            filter: grayscale(1) brightness(0.6);
+            opacity: 0.4;
+            border: 4px dashed #bbb;
+        }
+
+        .daily-message {
+            background: #fff;
+            color: #a385e0;
+            padding: 15px 30px;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        }
+
+        /* JANELA MODAL (VISUALIZAR CARTA GRANDE) */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
             background: white;
-            color: #b194e8;
+            padding: 20px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            max-width: 90%;
+            width: 340px;
+            transform: scale(0.7);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-card-view {
+            width: 100%;
+            height: 400px;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 8px solid #f3ecff;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .modal-card-view img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+
+        .modal-title {
+            color: #6c529c;
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        /* ANIMAÇÕES CORRIQUEIRAS */
+        @keyframes shake-light { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(2px, 2px); } }
+        @keyframes shake-heavy { 0%, 100% { transform: translate(0,0); } 25% { transform: translate(-5px, 5px); } 75% { transform: translate(5px, -5px); } }
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: scale(1); } }
+        @keyframes cardAppear { to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .btn-action {
+            padding: 12px 40px;
+            background: #b194e8;
+            color: white;
             border: none;
             border-radius: 60px;
             font-weight: bold;
-            font-size: 1.4rem;
+            font-size: 1.1rem;
             cursor: pointer;
-            box-shadow: 0 10px 25px rgba(177, 148, 232, 0.3);
+            box-shadow: 0 8px 20px rgba(177, 148, 232, 0.4);
             transition: 0.3s ease;
         }
-        .btn-restart:hover { transform: scale(1.1); background: #fdfbff; }
-
-        @media (max-width: 1000px) {
-            .cards-container { flex-wrap: wrap; }
-            .card { width: 130px; height: 185px; }
-        }
+        .btn-action:hover { transform: scale(1.05); background: #9b7ad9; }
     </style>
 </head>
 <body>
 
-<div class="container" id="main-container">
+<div class="nav-menu">
+    <button class="nav-btn active" id="btn-tab-pacote" onclick="mudarAba('pacote')">🎁 Recompensa Diária</button>
+    <button class="nav-btn" id="btn-tab-album" onclick="mudarAba('album')">📖 Meu Álbum (<span id="total-obtidas">0</span>/22)</button>
+</div>
+
+<div class="view-content" id="main-container">
     
-    <div id="pacote" class="pack-wrapper">
-        <img src="pacote.png" class="pack-half pack-top" alt="Pacote">
-        <img src="pacote.png" class="pack-half pack-bottom" alt="Pacote">
+    <div id="panel-pacote" class="tab-panel active-panel">
+        <div id="aviso-diario" class="daily-message" style="display: none;">
+            ✨ Você já abriu o pacote de hoje! Volte amanhã ou veja seu álbum. ✨
+        </div>
+
+        <div id="pacote" class="pack-wrapper">
+            <img src="pacote.png" class="pack-half pack-top" alt="Pacote" onerror="this.src='https://via.placeholder.com/400x500/b194e8/ffffff?text=Clique+para+Abrir!'">
+            <img src="pacote.png" class="pack-half pack-bottom" alt="Pacote" onerror="this.src='https://via.placeholder.com/400x500/b194e8/ffffff?text=Clique+para+Abrir!'">
+        </div>
+
+        <div id="reward" class="reward-screen">
+            <h1 style="color: #a385e0; font-size: 2.2rem; text-shadow: 2px 2px white;">✦ NOVAS FIGURINHAS! ✦</h1>
+            <div class="cards-container" id="display-cartas"></div>
+            <button class="btn-action" onclick="irParaOAlbum()">Guardar e Ver Álbum</button>
+        </div>
     </div>
 
-    <div id="reward" class="reward-screen">
-        <h1 style="color: #a385e0; font-size: 3.5rem; text-shadow: 2px 2px white; margin-bottom: 10px;">✦ INCRÍVEL! ✦</h1>
-        <div class="cards-container" id="display-cartas"></div>
-        <button class="btn-restart" onclick="location.reload()">Abrir novo pacote</button>
+    <div id="panel-album" class="tab-panel">
+        <div class="album-wrapper">
+            <h2 style="color: #6c529c; font-size: 1.8rem;">📖 Minhas Figurinhas Coletadas</h2>
+            <p style="color: #888; font-size: 0.9rem; margin-bottom: 10px;">Clique em uma figurinha colorida para ampliá-la!</p>
+            <div class="album-grid" id="album-grid"></div>
+        </div>
     </div>
 
 </div>
 
+<div class="modal-overlay" id="carta-modal" onclick="fecharModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-card-view">
+            <img id="modal-img" src="" alt="Carta Grande">
+        </div>
+        <div class="modal-title" id="modal-nome">Nome do Pônei</div>
+        <button class="btn-action" onclick="fecharModal()">Fechar</button>
+    </div>
+</div>
+
 <script>
-    // LISTA COMPLETA (22 cartas no total agora)
     const todasAsCartas = [
-        { img: "princesaluna.jpeg" },
-        { img: "princesacadence.jpeg" },
-        { img: "applejack.jpeg" },
-        { img: "pinkiepie.jpeg" },
-        { img: "rarity.jpeg" },
-        { img: "fluttershy.jpeg" },
-        { img: "twilight.jpeg" },
-        { img: "rainbowdash.jpeg" },
-        { img: "apple.png" },
-        { img: "sparkle.jpg" },
-        { img: "princess.jpg" },
-        { img: "lu.jpg" },
-        { img: "cada.jpg" },
-        { img: "pie.jpg" },
-        { img: "rar.jpg" },
-        { img: "rain.jpg" },
-        // NOVAS CARTAS BABY:
-        { img: "babyflur.jpeg" },
-        { img: "raritybaby.jpg" },
-        { img: "pinkiebaby.jpg" },
-        { img: "applebaby.jpg" },
-        { img: "rainbaby.jpg" },
-        { img: "twibaby.jpg" }
+        { id: 1, nome: "Princesa Luna", img: "princesaluna.jpeg" },
+        { id: 2, nome: "Princesa Cadence", img: "princesacadence.jpeg" },
+        { id: 3, nome: "Applejack", img: "applejack.jpeg" },
+        { id: 4, nome: "Pinkie Pie", img: "pinkiepie.jpeg" },
+        { id: 5, nome: "Rarity", img: "rarity.jpeg" },
+        { id: 6, nome: "Fluttershy", img: "fluttershy.jpeg" },
+        { id: 7, nome: "Twilight", img: "twilight.jpeg" },
+        { id: 8, nome: "Rainbow Dash", img: "rainbowdash.jpeg" },
+        { id: 9, nome: "Apple", img: "apple.png" },
+        { id: 10, nome: "Sparkle", img: "sparkle.jpg" },
+        { id: 11, nome: "Princess", img: "princess.jpg" },
+        { id: 12, nome: "Lu", img: "lu.jpg" },
+        { id: 13, nome: "Cada", img: "cada.jpg" },
+        { id: 14, nome: "Pie", img: "pie.jpg" },
+        { id: 15, nome: "Rar", img: "rar.jpg" },
+        { id: 16, nome: "Rain", img: "rain.jpg" },
+        { id: 17, nome: "Baby Flurry", img: "babyflur.jpeg" },
+        { id: 18, nome: "Rarity Baby", img: "raritybaby.jpg" },
+        { id: 19, nome: "Pinkie Baby", img: "pinkiebaby.jpg" },
+        { id: 20, nome: "Apple Baby", img: "applebaby.jpg" },
+        { id: 21, nome: "Rain Baby", img: "rainbaby.jpg" },
+        { id: 22, nome: "Twi Baby", img: "twibaby.jpg" }
     ];
 
     const container = document.getElementById('main-container');
     const pacote = document.getElementById('pacote');
     const displayCartas = document.getElementById('display-cartas');
+    const albumGrid = document.getElementById('album-grid');
+    const avisoDiario = document.getElementById('aviso-diario');
+    
+    const modal = document.getElementById('carta-modal');
+    const modalImg = document.getElementById('modal-img');
+    const modalNome = document.getElementById('modal-nome');
+    
     let cliques = 0;
+    let colecaoUsuario = JSON.parse(localStorage.getItem('mlp_colecao')) || [];
 
+    function jaAbriuHoje() {
+        const hoje = new Date().toDateString();
+        return hoje === localStorage.getItem('mlp_ultimo_pacote');
+    }
+
+    function inicializar() {
+        renderizarAlbum();
+        if (jaAbriuHoje()) {
+            pacote.style.display = 'none';
+            avisoDiario.style.display = 'inline-block';
+        }
+    }
+
+    function mudarAba(aba) {
+        document.getElementById('btn-tab-pacote').classList.remove('active');
+        document.getElementById('btn-tab-album').classList.remove('active');
+        document.getElementById('panel-pacote').classList.remove('active-panel');
+        document.getElementById('panel-album').classList.remove('active-panel');
+
+        if(aba === 'pacote') {
+            document.getElementById('btn-tab-pacote').classList.add('active');
+            document.getElementById('panel-pacote').classList.add('active-panel');
+        } else {
+            document.getElementById('btn-tab-album').classList.add('active');
+            document.getElementById('panel-album').classList.add('active-panel');
+        }
+    }
+
+    function renderizarAlbum() {
+        albumGrid.innerHTML = '';
+        let obtidas = 0;
+
+        todasAsCartas.forEach(carta => {
+            const possui = colecaoUsuario.includes(carta.id);
+            if (possui) obtidas++;
+
+            const div = document.createElement('div');
+            div.className = `card ${possui ? '' : 'locked'}`;
+            div.innerHTML = `<img src="${carta.img}" onerror="this.src='https://via.placeholder.com/110x155?text=?';">`;
+            
+            // Se o usuário possuir a carta, adiciona a função de clique para ampliar
+            if (possui) {
+                div.addEventListener('click', () => abrirModal(carta));
+            }
+
+            albumGrid.appendChild(div);
+        });
+
+        document.getElementById('total-obtidas').innerText = obtidas;
+    }
+
+    // --- FUNÇÕES DO MODAL (ZOOM DA CARTA) ---
+    function abrirModal(carta) {
+        modalImg.src = carta.img;
+        modalNome.innerText = carta.nome;
+        modal.classList.add('show');
+    }
+
+    function fecharModal() {
+        modal.classList.remove('show');
+    }
+
+    // --- AÇÃO DO PACOTE ---
     pacote.addEventListener('click', () => {
-        if (cliques >= 4) return;
+        if (jaAbriuHoje() || cliques >= 4) return;
         
         cliques++;
-        
         container.classList.remove('stage-1', 'stage-2', 'stage-3', 'stage-4');
 
         if (cliques === 1) container.classList.add('stage-1');
@@ -214,24 +459,39 @@
         else if (cliques === 4) {
             container.classList.add('stage-4');
 
-            // SORTEIO DE 5 CARTAS ALEATÓRIAS
             const sorteadas = [...todasAsCartas].sort(() => 0.5 - Math.random()).slice(0, 5);
             
             displayCartas.innerHTML = '';
             sorteadas.forEach((carta, i) => {
+                if (!colecaoUsuario.includes(carta.id)) {
+                    colecaoUsuario.push(carta.id);
+                }
+
                 const div = document.createElement('div');
-                div.className = 'card';
+                div.className = 'card reveal-card';
                 div.style.animationDelay = (i * 0.2) + "s";
-                div.innerHTML = `<img src="${carta.img}" onerror="this.src='https://via.placeholder.com/180x255?text=Pony'">`;
+                div.innerHTML = `<img src="${carta.img}" onerror="this.src='https://via.placeholder.com/140x195?text=Pony'">`;
                 displayCartas.appendChild(div);
             });
+
+            localStorage.setItem('mlp_colecao', JSON.stringify(colecaoUsuario));
+            localStorage.setItem('mlp_ultimo_pacote', new Date().toDateString());
 
             setTimeout(() => {
                 pacote.style.display = 'none';
                 container.classList.add('show-reward');
+                renderizarAlbum(); 
             }, 800);
         }
     });
+
+    function irParaOAlbum() {
+        container.classList.remove('show-reward');
+        avisoDiario.style.display = 'inline-block';
+        mudarAba('album');
+    }
+
+    inicializar();
 </script>
 
 </body>
