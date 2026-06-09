@@ -74,7 +74,7 @@
             z-index: 9;
         }
 
-        /* --- ESTÁGIOS DOS CLIQUES --- */
+        /* ESTÁGIOS DOS CLIQUES */
         .stage-1 .pack-half { animation: shake-light 0.3s infinite; }
         .stage-2 .pack-half { 
             animation: shake-heavy 0.2s infinite; 
@@ -93,7 +93,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 100%;
+            width: 95%;
         }
 
         .show-reward .reward-screen { 
@@ -103,18 +103,19 @@
 
         .cards-container {
             display: flex;
-            gap: 25px;
+            gap: 15px;
             justify-content: center;
-            margin-top: 40px;
+            margin-top: 30px;
+            flex-wrap: nowrap;
         }
 
         .card {
-            width: 240px;
-            height: 340px;
+            width: 180px; /* Ajuste leve para caberem as 5 lado a lado */
+            height: 255px;
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 45px rgba(0,0,0,0.2);
-            border: 10px solid white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            border: 8px solid white;
             overflow: hidden;
             opacity: 0;
             transform: translateY(60px);
@@ -130,19 +131,24 @@
         @keyframes cardAppear { to { opacity: 1; transform: translateY(0); } }
 
         .btn-restart {
-            margin-top: 60px;
-            padding: 20px 60px;
+            margin-top: 50px;
+            padding: 15px 50px;
             background: white;
             color: #b194e8;
             border: none;
             border-radius: 60px;
             font-weight: bold;
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             cursor: pointer;
-            box-shadow: 0 15px 30px rgba(177, 148, 232, 0.3);
+            box-shadow: 0 10px 25px rgba(177, 148, 232, 0.3);
             transition: 0.3s ease;
         }
-        .btn-restart:hover { transform: scale(1.1) translateY(-5px); box-shadow: 0 20px 40px rgba(177, 148, 232, 0.5); }
+        .btn-restart:hover { transform: scale(1.1); background: #fdfbff; }
+
+        @media (max-width: 1000px) {
+            .cards-container { flex-wrap: wrap; }
+            .card { width: 130px; height: 185px; }
+        }
     </style>
 </head>
 <body>
@@ -155,22 +161,39 @@
     </div>
 
     <div id="reward" class="reward-screen">
-        <h1 style="color: #a385e0; font-size: 4.5rem; text-shadow: 3px 3px white; margin-bottom: 20px;">✦ INCRÍVEL! ✦</h1>
-        <div class="cards-container" id="display-cartas">
-            </div>
+        <h1 style="color: #a385e0; font-size: 3.5rem; text-shadow: 2px 2px white; margin-bottom: 10px;">✦ INCRÍVEL! ✦</h1>
+        <div class="cards-container" id="display-cartas"></div>
         <button class="btn-restart" onclick="location.reload()">Abrir novo pacote</button>
     </div>
 
 </div>
 
 <script>
-    // LISTA OFICIAL COM AS SUAS IMAGENS
+    // LISTA COMPLETA (22 cartas no total agora)
     const todasAsCartas = [
         { img: "princesaluna.jpeg" },
         { img: "princesacadence.jpeg" },
         { img: "applejack.jpeg" },
         { img: "pinkiepie.jpeg" },
-        { img: "rarity.jpeg" }
+        { img: "rarity.jpeg" },
+        { img: "fluttershy.jpeg" },
+        { img: "twilight.jpeg" },
+        { img: "rainbowdash.jpeg" },
+        { img: "apple.png" },
+        { img: "sparkle.jpg" },
+        { img: "princess.jpg" },
+        { img: "lu.jpg" },
+        { img: "cada.jpg" },
+        { img: "pie.jpg" },
+        { img: "rar.jpg" },
+        { img: "rain.jpg" },
+        // NOVAS CARTAS BABY:
+        { img: "babyflur.jpeg" },
+        { img: "raritybaby.jpg" },
+        { img: "pinkiebaby.jpg" },
+        { img: "applebaby.jpg" },
+        { img: "rainbaby.jpg" },
+        { img: "twibaby.jpg" }
     ];
 
     const container = document.getElementById('main-container');
@@ -179,6 +202,8 @@
     let cliques = 0;
 
     pacote.addEventListener('click', () => {
+        if (cliques >= 4) return;
+        
         cliques++;
         
         container.classList.remove('stage-1', 'stage-2', 'stage-3', 'stage-4');
@@ -189,22 +214,22 @@
         else if (cliques === 4) {
             container.classList.add('stage-4');
 
-            // Sorteio de 3 cartas (sem repetir na mesma abertura)
-            const sorteadas = [...todasAsCartas].sort(() => 0.5 - Math.random()).slice(0, 3);
+            // SORTEIO DE 5 CARTAS ALEATÓRIAS
+            const sorteadas = [...todasAsCartas].sort(() => 0.5 - Math.random()).slice(0, 5);
             
             displayCartas.innerHTML = '';
             sorteadas.forEach((carta, i) => {
                 const div = document.createElement('div');
                 div.className = 'card';
-                div.style.animationDelay = (i * 0.3) + "s"; // Aparecem uma por uma
-                div.innerHTML = `<img src="${carta.img}">`;
+                div.style.animationDelay = (i * 0.2) + "s";
+                div.innerHTML = `<img src="${carta.img}" onerror="this.src='https://via.placeholder.com/180x255?text=Pony'">`;
                 displayCartas.appendChild(div);
             });
 
             setTimeout(() => {
                 pacote.style.display = 'none';
                 container.classList.add('show-reward');
-            }, 750);
+            }, 800);
         }
     });
 </script>
